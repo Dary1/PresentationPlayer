@@ -4,20 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum FaderState { Init,  FadingIn, Pause, FadingOut, Stopped }
+public enum FaderState { Init, FadingIn, Pause, FadingOut, Stopped }
 
-public class AutoFaderExecution : MonoBehaviour {
-
-
+public class AutoFaderExecution : MonoBehaviour
+{    
     public FaderState FaderState = FaderState.Init;
     public AutoFaderController Controller;
-
     public Type type;
     Text text;
     Image image;
     AudioSource audioSource;
-    // Use this for initialization
-    public void Initialize() {
+
+    public void Initialize()
+    {
         text = this.GetComponent<Text>();
         image = this.GetComponent<Image>();
         audioSource = this.GetComponent<AudioSource>();
@@ -29,7 +28,7 @@ public class AutoFaderExecution : MonoBehaviour {
             {
                 calculated = (int)(PresentationPlayer.Instance.WaitPerText * text.text.Length / Time.fixedDeltaTime);
                 calculated += (int)(PresentationPlayer.Instance.WaitPerImage / Time.fixedDeltaTime);
-            }            
+            }
             RecursivelyAddCount(this, calculated);
         }
     }
@@ -37,16 +36,18 @@ public class AutoFaderExecution : MonoBehaviour {
     private void RecursivelyAddCount(AutoFaderExecution afe, int calculated)
     {
         afe.counter = 0;
-        if (afe.countForNextAction != 0) {
+        if (afe.countForNextAction != 0)
+        {
             afe.countForNextAction += 200;
         }
         afe.countForNextAction += calculated;
         afe.FaderState = FaderState.FadingIn;
-        //afe.enabled = true;
-        if (afe.Controller.Parent != null) {
+
+        if (afe.Controller.Parent != null)
+        {
             RecursivelyAddCount(afe.Controller.Parent.Execution, calculated);
         }
-            
+
     }
 
     int counter = 0;
@@ -78,7 +79,7 @@ public class AutoFaderExecution : MonoBehaviour {
             }
         }
         else if (FaderState == FaderState.FadingOut)
-        {            
+        {
             if (counter++ > FadingOutCounter)
             {
                 counter = 0;
@@ -86,12 +87,11 @@ public class AutoFaderExecution : MonoBehaviour {
             }
             FadeOut();
         }
-        else if(FaderState == FaderState.Stopped){
+        else if (FaderState == FaderState.Stopped)
+        {
             this.enabled = false;
-            if(this.Controller.Parent.HasMoreToExecute())
+            if (this.Controller.Parent.HasMoreToExecute())
                 this.Controller.Parent.Begin();
-            //this.Controller.enabled = true;
-            //this.Controller.Parent.enabled = true;
         }
     }
 
